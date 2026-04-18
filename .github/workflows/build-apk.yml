@@ -1,0 +1,59 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Setup Expo and EAS
+      uses: expo/expo-github-action@v8
+      with:
+        eas-version: latest
+        token: ${{ secrets.EXPO_TOKEN }}
+
+    - name: Install dependencies
+      working-directory: expo
+      run: npm install --legacy-peer-deps
+
+    - name: Setup EAS
+      working-directory: expo
+      run: |
+        eas build:configure
+
+    - name: Build APK
+      working-directory: expo
+      run: eas build --platform android --profile preview --non-interactive --no-wait
+
+    - name: Get build URL
+      id: build
+      working-directory: expo
+      run: |
+        BUILD_URL=$(eas build:list --platform=android --limit=1 --json | jq -r '.[0].artifacts.buildUrl')
+        echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: |
+          *.apk
+        body: |
+          ## Nebula Assault APK
+          Download the APK to install on Android devices.
+
+          Build URL: ${{ steps.build.outputs.build_url }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
