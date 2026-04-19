@@ -1,10 +1,10 @@
-# Nebula Assault
+# Nebula
 
 A space shooter mobile game built with React Native and Expo, created with Rork AI.
 
 ## Overview
 
-Nebula Assault is an arcade-style space shooter where players defend against waves of alien enemies across multiple themed levels. The game features dynamic enemy behaviors, power-ups, and progressively challenging gameplay.
+Nebula is an arcade-style space shooter where players defend against waves of alien enemies across multiple themed levels. The game features dynamic enemy behaviors, power-ups, and progressively challenging gameplay.
 
 ## Features
 
